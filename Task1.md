@@ -80,4 +80,3 @@ Following Makefile has been used.
     clean::
             rm -rf *.vcd *.xml __pycache__ sim_build
 
-> Written with [StackEdit](https://stackedit.io/).
