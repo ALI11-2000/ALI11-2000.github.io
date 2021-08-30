@@ -27,7 +27,7 @@ For that purpose we created the following verilog design.
                     if ( A > B)
                         X = A - B;
                     else
-                        X= B - A;
+                        X = B - A;
                 end
                 4'd2: X = A > B;
                 4'd3: X = A & B;
