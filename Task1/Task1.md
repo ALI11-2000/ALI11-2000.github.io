@@ -43,13 +43,13 @@ For that purpose we created the following verilog design.
 We created the following model for the ALU in python.
 
     def alu_model(a:int,b:int,sel:int):
-    X=[a+b,abs(int(a-b)),a+b,(a) & (b), (a) | (b),(a) ^ (b),a,b]
-    if(sel==2):
-        if(int(a)>int(b)):
-            return 1
-        else:
-            return 0
-    return X[sel]
+        X=[a+b,abs(int(a-b)),a+b,(a) & (b), (a) | (b),(a) ^ (b),a,b]
+        if(sel==2):
+            if(int(a)>int(b)):
+                return 1
+            else:
+                return 0
+        return X[sel]
 
 For the above design, we have the following cocotb test bench.
     import cocotb
