@@ -3,7 +3,7 @@ For the first task, which was to simulate a combinational circuit we used an ALU
 |Selection Value|Operation  |
 |--|--|
 | 0 | A + B |
-| 1 | A - B |
+| 1 | A - B , B - A |
 | 2 | A > B |
 | 3 | A & B |
 | 4 | A \| B |
