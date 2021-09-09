@@ -12,6 +12,7 @@ For the first task, which was to simulate a combinational circuit we used an ALU
 |7|B|
 
 For that purpose we created the following verilog design.
+    
     `timescale 1ns/1ns
 
     module alu #(
