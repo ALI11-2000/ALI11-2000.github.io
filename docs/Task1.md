@@ -1,6 +1,5 @@
 ---
 title: Task 1
-layout: template
 filename: Task1.md
 --- 
 # Task 1: ALU
