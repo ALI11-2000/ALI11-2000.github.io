@@ -91,3 +91,6 @@ Following Makefile has been used.
     .PHONY: clean
     clean::
         rm -rf *.vcd *.xml __pycache__ sim_build
+        
+
+[Prev](README.md)|[Next](Task2.md)
