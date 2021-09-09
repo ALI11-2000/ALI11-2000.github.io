@@ -2,11 +2,11 @@
 # Task 2: Square Root
 For the second task, which was to simulate a sequential circuit we used a square root calculator which takes the input at the positive edge of the ready flag and provides the output when the done flag becomes 1. The calculator implements the Datapath + Controller paradigm.
 
-![Datapath for Square Root Calculator](https://github.com/ALI11-2000/cocotb_tasks/blob/main/Task2/Figures/DataPath.png)
+![Datapath for Square Root Calculator](Task2_Figures/DataPath.png)
 
 For the above datapath the controller has the following state transition diagram.
 
-![State Transition Diagram for the Controller](https://github.com/ALI11-2000/cocotb_tasks/blob/main/Task2/Figures/state%20transistion%20diagram.png)
+![State Transition Diagram for the Controller](Task2_Figures/state%20transistion%20diagram.png)
 
 We have the following verilog code for our calculator.
 
