@@ -93,4 +93,4 @@ Following Makefile has been used.
         rm -rf *.vcd *.xml __pycache__ sim_build
         
 
-[Prev](README.md)|[Next](Task2.md)
+[Main](README.md)|[Next](Task2.md)
