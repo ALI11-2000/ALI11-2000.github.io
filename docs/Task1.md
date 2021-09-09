@@ -1,7 +1,3 @@
----
-title: Task 1
-filename: Task1.md
---- 
 # Task 1: ALU
 For the first task, which was to simulate a combinational circuit we used an ALU with following operations.
 |Selection Value|Operation  |
