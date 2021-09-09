@@ -283,3 +283,4 @@ We have the following makefile for our project.
     clean::
       rm -rf *.vcd *.xml __pycache__ sim_build
 
+[Main](README.md)|[Prev](Task1.md)|[Next](Task2.md)
