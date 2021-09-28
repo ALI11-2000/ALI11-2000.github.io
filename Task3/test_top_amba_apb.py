@@ -1,3 +1,4 @@
+#importing required libraries
 from os import write
 import cocotb
 from cocotb import clock
@@ -9,7 +10,7 @@ from cocotb.handle import SimHandleBase
 import numpy
 from numpy import zeros
 
-
+#defining the reset sequence
 async def resetapb(dut):
     dut._log.info("Starting reset Sequence")
     clock = Clock(dut.pclk,10,units="ns")
