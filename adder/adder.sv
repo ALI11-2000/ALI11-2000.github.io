@@ -6,12 +6,12 @@
 module adder #(
   parameter integer DATA_WIDTH = 4
 ) (
-  input  logic unsigned [DATA_WIDTH-1:0] A,
-  input  logic unsigned [DATA_WIDTH-1:0] B,
-  output logic unsigned [DATA_WIDTH:0]   X
+  input  logic unsigned [DATA_WIDTH-1:0] i_A,
+  input  logic unsigned [DATA_WIDTH-1:0] i_B,
+  output logic unsigned [DATA_WIDTH:0]   o_X
 );
 
-  assign X = A + B;
+  assign o_X = i_A + i_B;
 
   // Dump waves
   initial begin

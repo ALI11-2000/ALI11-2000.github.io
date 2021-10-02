@@ -1,0 +1,30 @@
+$date
+	Sat Oct  2 22:12:54 2021
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module adder $end
+$var wire 4 ! i_A [3:0] $end
+$var wire 4 " i_B [3:0] $end
+$var wire 5 # o_X [4:0] $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b1111 #
+b1010 "
+b101 !
+$end
+#3
+b1100 !
+b11001 #
+b1101 "
+#6
+b1110 !
+b11101 #
+b1111 "
+#10

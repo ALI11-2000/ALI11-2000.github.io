@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1633194774" />
+    <testcase name="adder_basic_test" classname="test_adder" file="/home/ali112000/Desktop/CocoTb_FYP_Tasks/adder/test_adder.py" lineno="73" time="0.0020165443420410156" sim_time_ns="0.01" ratio_time="4.958978481910617" />
+  </testsuite>
+</testsuites>
