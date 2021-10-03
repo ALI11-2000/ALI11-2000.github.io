@@ -94,10 +94,8 @@ class adder_tb(object):
 
 @cocotb.test()
 async def adder_basic_test(dut):
-    """Test for 5 + 10"""
+    """Basic Test"""
 
-    A = 5
-    B = 10
     tb = adder_tb(dut)
     await tb.send_input(0,0)
     await tb.send_input(12,13)
