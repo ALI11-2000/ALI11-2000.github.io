@@ -77,8 +77,10 @@ async def alu_test(dut):
         dut.sel.value = sel
         await Timer(2,units='ns')
         output1=alu_model(A,B,sel)
-        dut._log.info( "Randomised test with: %d  {y}  %d = %d for model value {a}".format(y=x[sel],a=output1),dut.A.value,dut.B.value,dut.X.value)
-        assert dut.X.value == output1, "Randomised test failed with: {A}  {y}  {B} = {X} for {a}".format(A=dut.A.value, B=dut.B.value, X=dut.X.value,y=x[sel],a=output1)
+        dut._log.info( "Randomised test with: %d  {y}  %d = %d for model \
+        value {a}".format(y=x[sel],a=output1),dut.A.value,dut.B.value,dut.X.value)
+        assert dut.X.value == output1, "Randomised test failed with: {A}  {y} \
+        {B} = {X} for {a}".format(A=dut.A.value, B=dut.B.value, X=dut.X.value,y=x[sel],a=output1)
 ```
 
 Following Makefile has been used.
