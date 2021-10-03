@@ -14,20 +14,27 @@ from cocotb.binary import BinaryValue
 class AdderMonitor (BusMonitor):
     # monitor to be used at input and output of the DUT
     def __init__(self, entity, name, clock=None, reset=None, reset_n=None, callback=None, event=None, bus_separator="_"):
+        # Bus monitor initalized
         BusMonitor.__init__(self, entity, name, clock, reset, reset_n, callback, event, bus_separator)
+        # check for duplicate sampling
         self.last_Transaction = None
 
+    # function used to tell when to sample transactions
     @cocotb.coroutine
     async def _monitor_recv(self):
         while (True):
             await Timer(2)
             transaction = dict(self.bus.capture())
+            # check if transaction duplicate or not
             if (transaction != self.last_Transaction):
+                # checks if input is sampled or output is
                 if (self.name == 'i'):
-                    print("Input Sampled")
+                    print("Input Sampled",transaction)
                 else:
-                    print("Output Sampled")
+                    print("Output Sampled",transaction)
+                # transaction sampled by _recv
                 self._recv(transaction)
+                # updates last transaction
                 self.last_Transaction = transaction
 
 
@@ -74,7 +81,7 @@ class adder_tb(object):
     # adder reference model which will be called by the input monitor when input is sampled
     def adder_model(self,transaction):
         self.eX = BinaryValue(int(self.dut.i_A)+int(self.dut.i_B))
-        print("Transaction Model Called called",int(self.eX))
+        print("Transaction Model Called with expected output",int(self.eX),"for",int(self.dut.i_A),'+',int(self.dut.i_B))
         # expected value added in the expected output array
         self.expected_output.append({'X':self.eX})
 
@@ -92,12 +99,8 @@ async def adder_basic_test(dut):
     A = 5
     B = 10
     tb = adder_tb(dut)
-    #tb.start()
-    #await tb.start_input(1)
     await tb.send_input(0,0)
     await tb.send_input(12,13)
     await tb.send_input(2,3)
     await tb.send_input(14,15)
-    raise tb.scoreboard.result
-    #tb.stop()
     raise tb.scoreboard.result
