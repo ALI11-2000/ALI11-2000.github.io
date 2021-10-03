@@ -13,14 +13,22 @@ from cocotb.binary import BinaryValue
 
 class AdderMonitor (BusMonitor):
     # monitor to be used at input and output of the DUT
-    def __init__(self, entity, name, clock, reset=None, reset_n=None, callback=None, event=None, bus_separator="_"):
+    def __init__(self, entity, name, clock=None, reset=None, reset_n=None, callback=None, event=None, bus_separator="_"):
         BusMonitor.__init__(self, entity, name, clock, reset, reset_n, callback, event, bus_separator)
+        self.last_Transaction = None
 
     @cocotb.coroutine
-    def _monitor_recv(self):
-        yield Timer(2)
-        transaction = dict(self.bus.capture())
-        self._recv(transaction)
+    async def _monitor_recv(self):
+        while (True):
+            await Timer(2)
+            transaction = dict(self.bus.capture())
+            if (transaction != self.last_Transaction):
+                if (self.name == 'i'):
+                    print("Input Sampled")
+                else:
+                    print("Output Sampled")
+                self._recv(transaction)
+                self.last_Transaction = transaction
 
 
 class AdderOMonitor(AdderMonitor):
@@ -66,6 +74,7 @@ class adder_tb(object):
     # adder reference model which will be called by the input monitor when input is sampled
     def adder_model(self,transaction):
         self.eX = BinaryValue(int(self.dut.i_A)+int(self.dut.i_B))
+        print("Transaction Model Called called",int(self.eX))
         # expected value added in the expected output array
         self.expected_output.append({'X':self.eX})
 
@@ -83,8 +92,12 @@ async def adder_basic_test(dut):
     A = 5
     B = 10
     tb = adder_tb(dut)
+    #tb.start()
     #await tb.start_input(1)
-    await tb.send_input(A,B)
+    await tb.send_input(0,0)
     await tb.send_input(12,13)
+    await tb.send_input(2,3)
     await tb.send_input(14,15)
+    raise tb.scoreboard.result
+    #tb.stop()
     raise tb.scoreboard.result
