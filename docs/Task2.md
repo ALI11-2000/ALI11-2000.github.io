@@ -265,7 +265,8 @@ async def sq_root_test(dut):
         dut.ready=0
         await cocotb.triggers.FallingEdge(dut.done)
         dut._log.info("Square root of %d is %d by python we get %d",int(dut.num),int(dut.res),sq_root_model(input_value))
-        assert dut.res == sq_root_model(input_value),"Assertion error at num = {A} we get {B} but model value is {C}".format(A=dut.num,B=dut.res,C=sq_root_model(input_value))
+        assert dut.res == sq_root_model(input_value),"Assertion error at num = {A} we get {B}\
+        but model value is {C}".format(A=dut.num,B=dut.res,C=sq_root_model(input_value))
 ```
 We have the following makefile for our project.
 ```makefile  
