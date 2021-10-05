@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1633425832" />
+    <testcase name="sq_root__basic_test" classname="test_sq_root" file="/home/ali112000/Desktop/CocoTb_FYP_Tasks/Task2/LayeredTestbench/test_sq_root.py" lineno="101" time="0.012118101119995117" sim_time_ns="560.001" ratio_time="46211.943146437916" />
+  </testsuite>
+</testsuites>
