@@ -26,7 +26,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         # driver initialization
         self.driver = BusDriver.__init__(self, entity, name, clock)
         # monitor initialization
-        #self.monitor = BusMonitor.__init__(self, entity, name, clock)
+        self.monitor = BusMonitor.__init__(self, entity, name, clock)
         # setting clock value
         self.clock = clock
         # setting default values of input
@@ -70,6 +70,16 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         await RisingEdge(self.clock)
         self.bus.penable <= 0
         await RisingEdge(self.clock)
+    
+    @cocotb.coroutine
+    async def _monitor_recv(self):
+        while (True):
+            await RisingEdge(self.clock)
+            transaction = dict(self.bus.capture())
+            #print("in monitor we have",transaction)
+            if int(self.bus.pready) == 1 :
+                self._recv(transaction)
+                print("Input sampled is",transaction)
     
 
 @cocotb.test()
