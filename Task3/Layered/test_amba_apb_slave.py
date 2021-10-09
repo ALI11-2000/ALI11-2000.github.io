@@ -14,7 +14,7 @@ from cocotb.binary import BinaryValue
 import logging
 
 
-
+#Class containing APB driver and monitors 
 class amba_apba_slave_tb(BusDriver,BusMonitor):
     # APB slave signals
     _signals = [
@@ -38,8 +38,10 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
 
         self.output = []
         self.expected_output = []
+        #scoreboard for comparision of actual and expected output 
         self.scoreboard = Scoreboard(entity)
     
+    #function describing the reset sequence 
     @cocotb.coroutine
     async def resetseq(self):
         self.bus.preset <= 1
@@ -85,8 +87,11 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
 @cocotb.test()
 async def amba_apba_slave_basic_test(dut):
     """Basic Test"""
+    #clock generator function called with 10 ns frequency
     clock = Clock(dut.pclk,10,units="ns")
+    #clock started in parallel 
     cocotb.fork(clock.start())
+    #object instantiation of slave test bench class
     tb = amba_apba_slave_tb(dut,name="",clock=dut.pclk)
     await tb.resetseq()
     await tb.write(5,10)
