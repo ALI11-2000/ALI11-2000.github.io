@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1633775333" />
+    <testcase name="amba_apba_slave_basic_test" classname="test_amba_apb_slave" file="/home/syed/Desktop/CocoTb_FYP_Tasks/Task3/Layered/test_amba_apb_slave.py" lineno="75" time="0.009084224700927734" sim_time_ns="100.001" ratio_time="11008.204144244397" />
+  </testsuite>
+</testsuites>
