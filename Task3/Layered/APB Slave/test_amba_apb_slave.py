@@ -53,6 +53,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
     @cocotb.coroutine
     async def write(self, addr, data):
         self.bus.psel <= 1
+        await RisingEdge(self.clock)
         self.bus.penable <= 1
         self.bus.pwrite <= 1
         self.bus.paddr <= addr
@@ -65,6 +66,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
     @cocotb.coroutine
     async def read(self, addr):
         self.bus.psel <= 1
+        await RisingEdge(self.clock)
         self.bus.penable <= 1
         self.bus.pwrite <= 0
         self.bus.paddr <= addr
