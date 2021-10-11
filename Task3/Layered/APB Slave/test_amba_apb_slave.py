@@ -1,3 +1,4 @@
+
 import logging
 from typing import Awaitable
 import cocotb
@@ -12,6 +13,7 @@ from cocotb_bus.scoreboard import Scoreboard
 from cocotb.clock import Clock
 from cocotb.binary import BinaryValue
 import logging
+import numpy as np
 
 
 #Class containing APB driver and monitors 
@@ -36,6 +38,8 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         self.bus.paddr.setimmediatevalue(0)
         self.bus.pwdata.setimmediatevalue(0)
 
+        self.expected_memory = np.zeros(64)
+        print("array is",self.expected_memory)
         self.output = []
         self.expected_output = []
         #scoreboard for comparision of actual and expected output 
@@ -84,6 +88,11 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
             if int(self.bus.pready) == 1 :
                 self._recv(transaction)
                 print("Input sampled is",transaction)
+                self.apb_slave_model(transaction)
+    
+    def apb_slave_model(self,transaction):
+        if(int(transaction['pwrite'])==1):
+            self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
     
 
 @cocotb.test()
@@ -99,3 +108,4 @@ async def amba_apba_slave_basic_test(dut):
     await tb.write(5,10)
     await tb.read(5)
     await tb.read(1)
+    print("expected memory is",tb.expected_memory)
