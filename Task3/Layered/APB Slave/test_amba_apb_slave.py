@@ -28,9 +28,10 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         # driver initialization
         self.driver = BusDriver.__init__(self, entity, name, clock)
         # monitor initialization
-        self.monitor = BusMonitor.__init__(self, entity, name, clock)
+        self.monitor = BusMonitor.__init__(self, entity, name, clock,callback=None)
         # setting clock value
         self.clock = clock
+        self.last_transaction = {}
         # setting default values of input
         self.bus.psel.setimmediatevalue(0)
         self.bus.penable.setimmediatevalue(0)
@@ -42,8 +43,11 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         print("array is",self.expected_memory)
         self.output = []
         self.expected_output = []
+        self.expected_transaction = []
         #scoreboard for comparision of actual and expected output 
         self.scoreboard = Scoreboard(entity)
+
+       # self.scoreboard.add_interface(self.monitor, self.expected_transaction)
     
     #function describing the reset sequence 
     @cocotb.coroutine
@@ -54,6 +58,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         await RisingEdge(self.clock)
         self.bus.preset <= 0
     
+    #Write function writes values to slave 
     @cocotb.coroutine
     async def write(self, addr, data):
         self.bus.psel <= 1
@@ -67,6 +72,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         self.bus.penable <= 0
         await RisingEdge(self.clock)
     
+    #Read function takes values from slave 
     @cocotb.coroutine
     async def read(self, addr):
         self.bus.psel <= 1
@@ -79,29 +85,42 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         self.bus.penable <= 0
         await RisingEdge(self.clock)
     
+    #Monitor recieve is the recieving function that recieve values 
     @cocotb.coroutine
     async def _monitor_recv(self):
         while (True):
             await RisingEdge(self.clock)
             transaction = dict(self.bus.capture())
             #print("in monitor we have",transaction)
-            if int(self.bus.pready) == 1 :
-                self._recv(transaction)
-                print("Input sampled is",transaction)
-                if(int(transaction['pwrite']) == 0):
-                    await RisingEdge(self.clock)
-                    transaction = dict(self.bus.capture())
+            if int(self.bus.pready) == 1 :    
+                if(self.last_transaction != transaction):
                     self._recv(transaction)
-                    self.output.append(int(transaction['prdata']))
-                self.apb_slave_model(transaction)
-                print(self.output,self.expected_output)
-                self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+                    #print("Input sampled is",transaction)
+                    if(int(transaction['pwrite']) == 0):
+                        self.output.append(int(transaction['prdata']))
+                    self.apb_slave_model(transaction)
+                    #print(self.output,self.expected_output)
+                    self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+            self.last_transaction = transaction
     
     def apb_slave_model(self,transaction):
+        self.expected_transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
+                                     'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
+        
+        self.expected_transaction['pclk'] = transaction['pclk']
+        self.expected_transaction['preset'] = transaction['preset']
+        self.expected_transaction['psel'] = transaction['psel']
+        self.expected_transaction['penable'] = transaction['penable']
+        self.expected_transaction['pwrite'] = transaction['pwrite']
+        self.expected_transaction['paddr'] = transaction['paddr']
+        self.expected_transaction['pready'] = transaction['pready']
+
         if(int(transaction['pwrite'])==1):
             self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
+            self.expected_transaction['prdata'] = transaction['prdata']
         else:
             self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
+            self.expected_transaction['prdata'] = self.expected_memory[int(transaction['paddr'])-1]
     
 
 @cocotb.test()
@@ -118,6 +137,7 @@ async def amba_apba_slave_basic_test(dut):
     await tb.write(11,20)
     await tb.write(13,30)
     await tb.read(5)
+    #Reads the value from the given value
     await tb.read(1)
     await tb.read(11)
     print("expected memory is",tb.expected_memory)
