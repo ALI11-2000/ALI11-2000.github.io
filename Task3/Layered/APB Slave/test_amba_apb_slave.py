@@ -27,17 +27,19 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
     def __init__(self,entity,name,clock):
         # driver initialization
         self.driver = BusDriver.__init__(self, entity, name, clock)
-        # monitor initialization
-        self.monitor = BusMonitor.__init__(self, entity, name, clock,callback=None)
-        # setting clock value
-        self.clock = clock
-        self.last_transaction = {}
         # setting default values of input
         self.bus.psel.setimmediatevalue(0)
         self.bus.penable.setimmediatevalue(0)
         self.bus.pwrite.setimmediatevalue(0)
         self.bus.paddr.setimmediatevalue(0)
         self.bus.pwdata.setimmediatevalue(0)
+        # monitor initialization
+        self.transaction = dict(self.bus.capture())
+        print(self.transaction)
+        self.monitor = BusMonitor.__init__(self, entity, name, clock,callback=self.apb_slave_model(self.transaction))
+        # setting clock value
+        self.clock = clock
+        self.last_transaction = {}
 
         self.expected_memory = np.zeros(64)
         print("array is",self.expected_memory)
@@ -98,9 +100,9 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
                     #print("Input sampled is",transaction)
                     if(int(transaction['pwrite']) == 0):
                         self.output.append(int(transaction['prdata']))
-                    self.apb_slave_model(transaction)
+                    #self.apb_slave_model(transaction)
                     #print(self.output,self.expected_output)
-                    self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+                    self.scoreboard.add_interface(self.monitor,self.expected_transaction)
             self.last_transaction = transaction
     
     def apb_slave_model(self,transaction):
