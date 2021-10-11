@@ -3,25 +3,25 @@
 module alu #(
     parameter integer width = 5
 ) (
-    output reg [width:0] X,
-    input [width:0] A,B,input [3:0] sel
+    output reg [width:0] o_X,
+    input [width:0] i_A,i_B,input [3:0] i_sel
 );
     always_comb begin 
-        case (sel)
-            4'd0: X = A + B;
+        case (i_sel)
+            4'd0: o_X = i_A + i_B;
             4'd1: begin 
-                if ( A > B)
-                    X = A - B;
+                if ( i_A > i_B)
+                    o_X = i_A - i_B;
                 else
-                    X= B - A;
+                    o_X= i_B - i_A;
             end
-            4'd2: X = A > B;
-            4'd3: X = A & B;
-            4'd4: X = A | B;
-            4'd5: X = A ^ B;
-            4'd6: X = A;
-            4'd7: X = B;
-            default: X = A;
+            4'd2: o_X = i_A > i_B;
+            4'd3: o_X = i_A & i_B;
+            4'd4: o_X = i_A | i_B;
+            4'd5: o_X = i_A ^ i_B;
+            4'd6: o_X = i_A;
+            4'd7: o_X = i_B;
+            default: o_X = i_A;
         endcase
     end
 
