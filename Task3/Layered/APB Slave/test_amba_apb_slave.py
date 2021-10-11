@@ -15,7 +15,7 @@ from cocotb.binary import BinaryValue
 import logging
 import numpy as np
 
-class Monitor1 (BusMonitor):
+class amba_apb_slave_tb (BusMonitor,BusDriver):
 
     # monitor to be used at input and output of the DUT
     _signals = [
@@ -23,75 +23,28 @@ class Monitor1 (BusMonitor):
         "paddr","pwdata","pready","prdata"
     ]
 
-    def __init__(self, dut, name, clock, reset=None, reset_n=None, callback=None, event=None, bus_separator=None):
-        # Bus monitor initalized
-        BusMonitor.__init__(self, dut, name=name, clock=clock, reset=reset, reset_n=reset_n, callback=callback, event=event, bus_separator=bus_separator)
-        # check for duplicate sampling
-        self.last_Transaction = None
-
-    #Monitor recieve is the recieving function that recieve values 
-    @cocotb.coroutine
-    async def _monitor_recv(self):
-        while (True):
-            await RisingEdge(self.clock)
-            transaction = dict(self.bus.capture())
-            #print("in monitor we have",transaction)
-            if int(self.bus.pready) == 1 :    
-                if(self.last_transaction != transaction):
-                    self._recv(transaction)
-                    #print("Input sampled is",transaction)
-                    if(int(transaction['pwrite']) == 0):
-                        self.output.append(int(transaction['prdata']))
-                    #self.apb_slave_model(transaction)
-                    #print(self.output,self.expected_output)
-                    self.scoreboard.add_interface(self.monitor,self.expected_transaction)
-            self.last_transaction = transaction
-
-class Driver1 (BusDriver):
-    _signals = [
-        "pclk","preset","psel","penable","pwrite",\
-        "paddr","pwdata"
-    ]
-
-    def __init__(self, dut, name, clock):
-        BusDriver.__init__(self, dut, name,clock)
+    def __init__(self,entity,name,clock):
+        # driver initialization
+        self.driver = BusDriver.__init__(self, entity, name, clock)
+        # monitor initialization
+        self.monitor = BusMonitor.__init__(self, entity, name, clock,callback=None)
+        # setting clock value
+        self.clock = clock
+        self.last_transaction = {}
         # setting default values of input
         self.bus.psel.setimmediatevalue(0)
         self.bus.penable.setimmediatevalue(0)
         self.bus.pwrite.setimmediatevalue(0)
         self.bus.paddr.setimmediatevalue(0)
         self.bus.pwdata.setimmediatevalue(0)
- 
-
-#Class containing APB driver and monitors 
-class amba_apba_slave_tb(object):
-    # APB slave signals
-    
-
-    def __init__(self,dut,name,clock):
-        # driver initialization
-        self.dut = dut
-        self.driver = Driver1(self.dut, name, clock)
-    
-        
-        self.transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
-                            'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
-
-        # setting clock value
-        self.clock = clock
-        self.last_transaction = {}
 
         self.expected_memory = np.zeros(64)
         #print("array is",self.expected_memory)
         self.output = []
         self.expected_output = []
         self.expected_transaction = []
-
-        # monitor initialization
-        self.monitor = Monitor1(self, self.dut, name, clock, callback=None)
         #scoreboard for comparision of actual and expected output 
-        self.scoreboard = Scoreboard(self.dut)
-
+        self.scoreboard = Scoreboard(entity)
         #self.scoreboard.add_interface(self.monitor, self.expected_transaction)
     
     #function describing the reset sequence 
@@ -130,6 +83,24 @@ class amba_apba_slave_tb(object):
         self.bus.penable <= 0
         await RisingEdge(self.clock)
     
+    #Monitor recieve is the recieving function that recieve values 
+    @cocotb.coroutine
+    async def _monitor_recv(self):
+        while (True):
+            await RisingEdge(self.clock)
+            transaction = dict(self.bus.capture())
+            #print("in monitor we have",transaction)
+            if int(self.bus.pready) == 1 :    
+                if(self.last_transaction != transaction):
+                    self._recv(transaction)
+                    #print("Input sampled is",transaction)
+                    if(int(transaction['pwrite']) == 0):
+                        self.output.append(int(transaction['prdata']))
+                    self.apb_slave_model(transaction)
+                    #print(self.output,self.expected_output)
+                    self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+            self.last_transaction = transaction
+    
     def apb_slave_model(self,transaction):
         self.expected_transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
                                      'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
@@ -158,7 +129,7 @@ async def amba_apba_slave_basic_test(dut):
     #clock started in parallel 
     cocotb.fork(clock.start())
     #object instantiation of slave test bench class
-    tb = amba_apba_slave_tb(dut,"",clock=dut.pclk)
+    tb = amba_apb_slave_tb(dut,"",clock=dut.pclk)
     await tb.resetseq()
     await tb.write(5,10)
     await tb.write(11,20)
