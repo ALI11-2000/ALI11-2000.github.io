@@ -1,7 +1,7 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1633964901" />
-    <testcase name="amba_apba_slave_basic_test" classname="test_amba_apb_slave" file="/home/ai112000/Desktop/CocoTb_FYP_Tasks/Task3/Layered/APB Slave/test_amba_apb_slave.py" lineno="128" time="0.002032041549682617" sim_time_ns="0.001" ratio_time="0.4921159216238414">
+    <property name="random_seed" value="1633967960" />
+    <testcase name="amba_apba_slave_basic_test" classname="test_amba_apb_slave" file="/home/ai112000/Desktop/CocoTb_FYP_Tasks/Task3/Layered/APB Slave/test_amba_apb_slave.py" lineno="153" time="0.0018455982208251953" sim_time_ns="0.001" ratio_time="0.5418297377599793">
       <failure />
     </testcase>
   </testsuite>
