@@ -100,6 +100,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
     def apb_slave_model(self,transaction):
         if(int(transaction['pwrite'])==1):
             self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
+            print(self.expected_output)
         else:
             self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
     
