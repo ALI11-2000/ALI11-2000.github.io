@@ -54,6 +54,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         await RisingEdge(self.clock)
         self.bus.preset <= 0
     
+    #Write function takes values from slave 
     @cocotb.coroutine
     async def write(self, addr, data):
         self.bus.psel <= 1
@@ -67,6 +68,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         self.bus.penable <= 0
         await RisingEdge(self.clock)
     
+    #Read function takes values from slave 
     @cocotb.coroutine
     async def read(self, addr):
         self.bus.psel <= 1
@@ -79,6 +81,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         self.bus.penable <= 0
         await RisingEdge(self.clock)
     
+    #Monitor recieve is the recieving function that recieve values 
     @cocotb.coroutine
     async def _monitor_recv(self):
         while (True):
@@ -107,5 +110,7 @@ async def amba_apba_slave_basic_test(dut):
     await tb.resetseq()
     await tb.write(5,10)
     await tb.read(5)
+    #Reads the value from the given value
     await tb.read(1)
+    #Printing the expected value from the memory
     print("expected memory is",tb.expected_memory)
