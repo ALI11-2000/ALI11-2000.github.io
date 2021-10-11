@@ -54,7 +54,7 @@ class amba_apba_slave_tb(BusDriver,BusMonitor):
         await RisingEdge(self.clock)
         self.bus.preset <= 0
     
-    #Write function takes values from slave 
+    #Write function write values from slave 
     @cocotb.coroutine
     async def write(self, addr, data):
         self.bus.psel <= 1
