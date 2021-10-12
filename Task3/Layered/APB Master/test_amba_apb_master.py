@@ -99,7 +99,20 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
     def apb_master_model(self,transaction):
         self.expected_transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
                                      'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
-        
+        self.expected_transaction['pclk'] = transaction['pclk']
+        self.expected_transaction['preset'] = transaction['preset']
+        self.expected_transaction['psel'] = transaction['psel']
+        self.expected_transaction['penable'] = transaction['penable']
+        self.expected_transaction['pwrite'] = transaction['pwrite']
+        self.expected_transaction['paddr'] = transaction['paddr']
+        self.expected_transaction['pready'] = transaction['pready']
+
+        if(int(transaction['pwrite'])==1):
+            self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
+            self.expected_transaction['prdata'] = transaction['prdata']
+        else:
+            self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
+            self.expected_transaction['prdata'] = self.expected_memory[int(transaction['paddr'])-1]
         
     
 
