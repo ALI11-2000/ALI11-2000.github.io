@@ -34,14 +34,16 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
         self.clock = clock
         self.last_transaction = {}
         # setting default values of input
-        self.bus.psel.setimmediatevalue(0)
-        self.bus.penable.setimmediatevalue(0)
+        self.bus.pclk.setimmediatevalue(0)
+        self.bus.preset.setimmediatevalue(0)
+        self.bus.transfer.setimmediatevalue(0)
         self.bus.mpwrite.setimmediatevalue(0)
+        self.bus.pready.setimmediatevalue(0)
         self.bus.apb_write_paddr.setimmediatevalue(0)
+        self.bus.apb_write_data.setimmediatevalue(0)
         self.bus.apb_read_paddr.setimmediatevalue(0)
+        self.bus.prdata.setimmediatevalue(0)
         
-        self.bus.paddr.setimmediatevalue(0)
-        self.bus.pwdata.setimmediatevalue(0)
 
         self.expected_memory = np.zeros(64)
         #print("array is",self.expected_memory)
