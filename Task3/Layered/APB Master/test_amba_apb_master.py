@@ -66,28 +66,20 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
     #Write function writes values to master
     @cocotb.coroutine
     async def write(self, addr, data):
-        self.bus.psel <= 1
-        await RisingEdge(self.clock)
-        self.bus.penable <= 1
-        self.bus.pwrite <= 1
-        self.bus.paddr <= addr
-        self.bus.pwdata <= data
-        while(self.bus.pready != BinaryValue(1)): await RisingEdge(self.clock)
-        await RisingEdge(self.clock)
-        self.bus.penable <= 0
+        self.bus.transfer <= 1
+        self.bus.mpwrite <= 1
+        self.bus.pready <= 1
+        self.bus.apb_write_paddr <= addr
+        self.bus.apb_write_data <= data
         await RisingEdge(self.clock)
     
     #Read function takes values from master
     @cocotb.coroutine
     async def read(self, addr):
-        self.bus.psel <= 1
-        await RisingEdge(self.clock)
-        self.bus.penable <= 1
-        self.bus.pwrite <= 0
-        self.bus.paddr <= addr
-        while(self.bus.pready != BinaryValue(1)): await RisingEdge(self.clock)
-        await RisingEdge(self.clock)
-        self.bus.penable <= 0
+        self.bus.transfer <= 1
+        self.bus.mpwrite <= 0
+        self.bus.pready <= 1
+        self.bus.apb_write_paddr <= addr
         await RisingEdge(self.clock)
     
     #Monitor recieve is the recieving function that recieve values 
@@ -97,35 +89,14 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
             await RisingEdge(self.clock)
             transaction = dict(self.bus.capture())
             #print("in monitor we have",transaction)
-            if int(self.bus.pready) == 1 :    
-                if(self.last_transaction != transaction):
-                    self._recv(transaction)
-                    #print("Input sampled is",transaction)
-                    if(int(transaction['pwrite']) == 0):
-                        self.output.append(int(transaction['prdata']))
-                    self.apb_master_model(transaction)
-                    #print(self.output,self.expected_output)
-                    self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+        
             self.last_transaction = transaction
     
     def apb_master_model(self,transaction):
         self.expected_transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
                                      'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
         
-        self.expected_transaction['pclk'] = transaction['pclk']
-        self.expected_transaction['preset'] = transaction['preset']
-        self.expected_transaction['psel'] = transaction['psel']
-        self.expected_transaction['penable'] = transaction['penable']
-        self.expected_transaction['pwrite'] = transaction['pwrite']
-        self.expected_transaction['paddr'] = transaction['paddr']
-        self.expected_transaction['pready'] = transaction['pready']
-
-        if(int(transaction['pwrite'])==1):
-            self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
-            self.expected_transaction['prdata'] = transaction['prdata']
-        else:
-            self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
-            self.expected_transaction['prdata'] = self.expected_memory[int(transaction['paddr'])-1]
+        
     
 
 @cocotb.test()
