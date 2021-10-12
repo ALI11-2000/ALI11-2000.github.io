@@ -72,6 +72,8 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
         self.bus.apb_write_paddr <= addr
         self.bus.apb_write_data <= data
         await RisingEdge(self.clock)
+        self.bus.pready <= 0
+        self.bus.transfer <= 0
     
     #Read function takes values from master
     @cocotb.coroutine
@@ -81,6 +83,8 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
         self.bus.pready <= 1
         self.bus.apb_write_paddr <= addr
         await RisingEdge(self.clock)
+        self.bus.pready <= 0
+        self.bus.transfer <= 0
     
     #Monitor recieve is the recieving function that recieve values 
     @cocotb.coroutine
