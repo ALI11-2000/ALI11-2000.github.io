@@ -115,20 +115,20 @@ class amba_apb_master_tb (BusMonitor,BusDriver):
                     self.expected_output['psel'] = 1
                     self.expected_output['penable'] = 0
                     if(self.output != self.expected_output):
-                        self.log.info("%s and %s",self.output,self.expected_output)
-                        self.log.info("Error in Setup phase")
+                        #self.log.info("%s and %s",self.output,self.expected_output)
+                        self.log.error("Error in Setup phase")
                 elif(last_transaction['transfer'] == 0  and last_transaction['pready'] == 1):
                     self.expected_output['psel'] = 0
                     self.expected_output['penable'] = 0
                     if(self.output != self.expected_output):
-                        self.log.info("%s and %s",self.output,self.expected_output)
-                        self.log.info("Error in Idle phase")
+                        #self.log.info("%s and %s",self.output,self.expected_output)
+                        self.log.error("Error in Idle phase")
                 elif(last_transaction['psel'] == 1  and last_transaction['penable'] == 0):
                     self.expected_output['psel'] = 1
                     self.expected_output['penable'] = 1
                     if(self.output != self.expected_output):
-                        self.log.info("%s and %s",self.output,self.expected_output)
-                        self.log.info("Error in Access phase")
+                        #self.log.info("%s and %s",self.output,self.expected_output)
+                        self.log.error("Error in Access phase")
 
                 
 
