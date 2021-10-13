@@ -1,12 +1,13 @@
 
 import logging
-from typing import Awaitable
+from typing import Awaitable, Literal
 import cocotb
 from cocotb import clock
 from cocotb.decorators import coroutine
 from cocotb.triggers import Event, FallingEdge, RisingEdge, Timer, Trigger
 import random
 from cocotb.result import TestFailure
+import cocotb_bus
 from cocotb_bus.monitors import BusMonitor
 from cocotb_bus.drivers import BusDriver
 from cocotb_bus.scoreboard import Scoreboard
@@ -44,7 +45,8 @@ class amba_apb_slave_tb (BusMonitor,BusDriver):
         self.expected_output = []
         self.expected_transaction = []
         #scoreboard for comparision of actual and expected output 
-        self.scoreboard = Scoreboard(entity)
+        self.scoreboard = Scoreboard(entity,0,False)
+        self.scoreboard._imm = False
         #self.scoreboard.add_interface(self.monitor, self.expected_transaction)
     
     #function describing the reset sequence 
@@ -91,36 +93,24 @@ class amba_apb_slave_tb (BusMonitor,BusDriver):
             transaction = dict(self.bus.capture())
             #print("in monitor we have",transaction)
             if int(self.bus.pready) == 1 :    
-                if(self.last_transaction != transaction):
+                #if(self.last_transaction != transaction):
                     self._recv(transaction)
                     #print("Input sampled is",transaction)
-                    if(int(transaction['pwrite']) == 0):
-                        self.output.append(int(transaction['prdata']))
+                    if((transaction['pwrite']) == BinaryValue(0)):
+                        self.output.append((transaction['prdata']))
                     self.apb_slave_model(transaction)
                     #print(self.output,self.expected_output)
-                    self.scoreboard.compare(self.output,self.expected_output,log=logging.log)
+                    if(self.output != self.expected_output):
+                        self.log.error("Test failed for transaction %s",transaction)
+                    #self.scoreboard.compare(self.output,self.expected_output,log=logging.log(level=0,msg="error raised"),strict_type=True)
             self.last_transaction = transaction
     
     def apb_slave_model(self,transaction):
-        self.expected_transaction = {'pclk': 1, 'preset': 0, 'psel': 1, 'penable': 1, 'pwrite': 1,\
-                                     'paddr': 0, 'pwdata': 0, 'pready': 1, 'prdata': 00000000}
-        
-        self.expected_transaction['pclk'] = transaction['pclk']
-        self.expected_transaction['preset'] = transaction['preset']
-        self.expected_transaction['psel'] = transaction['psel']
-        self.expected_transaction['penable'] = transaction['penable']
-        self.expected_transaction['pwrite'] = transaction['pwrite']
-        self.expected_transaction['paddr'] = transaction['paddr']
-        self.expected_transaction['pready'] = transaction['pready']
-
         if(int(transaction['pwrite'])==1):
             self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
-            self.expected_transaction['prdata'] = transaction['prdata']
         else:
             self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
-            self.expected_transaction['prdata'] = self.expected_memory[int(transaction['paddr'])-1]
     
-
 @cocotb.test()
 async def amba_apba_slave_basic_test(dut):
     """Basic Test"""
@@ -138,4 +128,4 @@ async def amba_apba_slave_basic_test(dut):
     #Reads the value from the given value
     await tb.read(1)
     await tb.read(11)
-    print("expected memory is",tb.expected_memory)
+    #print("expected memory is",tb.expected_memory)
