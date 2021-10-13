@@ -88,6 +88,7 @@ class amba_apb_slave_tb (BusMonitor,BusDriver):
     #Monitor recieve is the recieving function that recieve values 
     @cocotb.coroutine
     async def _monitor_recv(self):
+        await RisingEdge(self.bus.pready)
         while (True):
             await RisingEdge(self.clock)
             transaction = dict(self.bus.capture())
@@ -97,19 +98,20 @@ class amba_apb_slave_tb (BusMonitor,BusDriver):
                     self._recv(transaction)
                     #print("Input sampled is",transaction)
                     if((transaction['pwrite']) == BinaryValue(0)):
-                        self.output.append((transaction['prdata']))
+                        self.output.append(int(transaction['prdata']))
                     self.apb_slave_model(transaction)
                     #print(self.output,self.expected_output)
-                    if(self.output != self.expected_output):
+                    if(str(self.output) != str(self.expected_output)):
+                        self.log.error("Got %s but expected %s",self.output,self.expected_output)
                         self.log.error("Test failed for transaction %s",transaction)
                     #self.scoreboard.compare(self.output,self.expected_output,log=logging.log(level=0,msg="error raised"),strict_type=True)
             self.last_transaction = transaction
     
     def apb_slave_model(self,transaction):
         if(int(transaction['pwrite'])==1):
-            self.expected_memory[int(transaction['paddr'])-1] = int(transaction['pwdata'])
+            self.expected_memory[int(transaction['paddr'])-1] = (int(transaction['pwdata']))
         else:
-            self.expected_output.append(self.expected_memory[int(transaction['paddr'])-1])
+            self.expected_output.append(int(self.expected_memory[int(transaction['paddr'])-1]))
     
 @cocotb.test()
 async def amba_apba_slave_basic_test(dut):
