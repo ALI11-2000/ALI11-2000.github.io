@@ -1,5 +1,4 @@
 # importing required libraries
-from os import name
 import cocotb
 from cocotb.triggers import FallingEdge, RisingEdge
 from cocotb.clock import Clock
