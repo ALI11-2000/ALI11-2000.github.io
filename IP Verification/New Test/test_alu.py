@@ -6,6 +6,7 @@ from cocotb.clock import Clock
 from cocotb.handle import BinaryRepresentation
 import random
 import logging
+import math
 
 from codecs import decode
 import struct
@@ -39,16 +40,44 @@ async def alu_test(dut):
     for i in range(50): await RisingEdge(dut.clk)
     result = bin_to_float(str(dut.data1.value))
     print("input is ",(dut.degrees),"and sine output is ",(result))
+    refoutput0= math.sin(3.14/2)
+    print("Reference output is ",float(refoutput0))
 
     dut.actv.value = 1
     for i in range(50): await RisingEdge(dut.clk)
     result = bin_to_float(str(dut.data1.value))
     print("input is ",(dut.degrees),"and cosine output is ",(result))
+    refoutput1= math.cos(3.14/2)
+    print("Reference output is ",float(refoutput1))
 
     dut.actv.value = 2
     for i in range(50): await RisingEdge(dut.clk)
     result = bin_to_float(str(dut.data1.value))
     print("input is ",(dut.degrees),"and tangent output is ",(result))
+    refoutput2= math.tan(3.14/2)
+    print("Reference output is ",float(refoutput2))
+
+    dut.actv.value = 3
+    for i in range(50): await RisingEdge(dut.clk)
+    result = bin_to_float(str(dut.data1.value))
+    print("input is ",(dut.degrees),"and cosec output is ",(result))
+    refoutput3= math.asin(3.14/2)
+    print("Reference output is ",float(refoutput3))
+
+    dut.actv.value = 4
+    for i in range(50): await RisingEdge(dut.clk)
+    result = bin_to_float(str(dut.data1.value))
+    print("input is ",(dut.degrees),"and sec output is ",(result))
+    refoutput4= math.acos(3.14/2)
+    print("Reference output is ",float(refoutput4))
+
+    dut.actv.value = 5
+    for i in range(50): await RisingEdge(dut.clk)
+    result = bin_to_float(str(dut.data1.value))
+    print("input is ",(dut.degrees),"and Cotangent output is ",(result))
+    refoutput5= sympy.cot(3.14/2)
+    print("Reference output is ",float(refoutput5))
+
 
 
 
