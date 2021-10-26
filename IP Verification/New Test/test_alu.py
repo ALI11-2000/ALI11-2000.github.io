@@ -39,3 +39,21 @@ async def alu_test(dut):
     for i in range(50): await RisingEdge(dut.clk)
     result = bin_to_float(str(dut.data1.value))
     print("input is ",(dut.degrees),"and sine output is ",(result))
+
+    dut.actv.value = 1
+    for i in range(50): await RisingEdge(dut.clk)
+    result = bin_to_float(str(dut.data1.value))
+    print("input is ",(dut.degrees),"and cosine output is ",(result))
+
+    dut.actv.value = 2
+    for i in range(50): await RisingEdge(dut.clk)
+    result = bin_to_float(str(dut.data1.value))
+    print("input is ",(dut.degrees),"and tangent output is ",(result))
+
+
+
+
+#asserting error if the test fails
+ #   assert dut.X.value == output1, "Randomised test failed with: {A} \
+ #   {y}  {B} = {X} for {a}".format(A=dut.A.value, B=dut.B.value,     \
+ #    X=dut.X.value,y=x[sel],a=output1)
